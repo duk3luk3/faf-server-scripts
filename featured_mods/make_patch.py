@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 """
   Mod updater script
@@ -19,6 +19,9 @@ import zipfile
 import tempfile
 import sys
 import json
+
+sys.path.append(os.path.abspath("/opt/stable/faftools/faf/tools"))
+from fa import update_version
 
 def read_db(mod):
     """
@@ -78,6 +81,11 @@ def create_file(mod, fileId, version, name, source, target_dir, old_md5, dryrun)
     name = name.format(version)
     target_name = target_dir + '/' + name
     print("Processing {} (fileId {})".format(name, fileId))
+
+    # rename == False is for straight copy of source file
+    # rename == True is for moving a compiled file from its temporary location,
+    # which also means changing fname
+    rename = None
     # list -> zipfile
     if type(source) is list:
         print("Zipping {} -> {}".format(source, target_name))
@@ -87,6 +95,11 @@ def create_file(mod, fileId, version, name, source, target_dir, old_md5, dryrun)
         for sm in source:
             zipdir(sm, zf)
         zf.close()
+        rename = True
+    elif source.endswith('ForgedAlliance.exe'):
+        fo, fname = tempfile.mkstemp('_'+ name, 'patcher_')
+        fo.close() # Don't need the handle
+        update_version.update_exe_version(source, fname, version)
         rename = True
     else:
         rename = False
@@ -182,7 +195,7 @@ if __name__ == '__main__':
     if version is None:
         print('Please pass patch version as argument')
         sys.exit(1)
-            
+
 #    # target filename / fileId in updates_{mod}_files table / source files with version placeholder
 #    # if source files is single string, file is copied directly
 #    # if source files is a list, files are zipped
