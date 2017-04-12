@@ -83,7 +83,8 @@ The `patch_info.json` file is necessary to tell the patch creation script (`make
 
 The structure is as follows:
 
-* mod: Defines which mod
+* mod: Defines which mod - put null there to require mod name being passed to `make_patch.py` on the commandline in case of mods that are deployed with multiple versions
+* version: mod version
 * files: List of filesets
     * target filename, with `{}` placeholder for patch version
     * file id for the file, corresponding to the `updates_<mod>` table

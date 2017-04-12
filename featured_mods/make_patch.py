@@ -146,6 +146,7 @@ if __name__ == '__main__':
 
     dryrun = False
     version = None
+    mod = None
     usage = False
     target_dir = '/opt/stable/content/faf/updaterNew/'
     infofile = 'patch_info.json'
@@ -160,6 +161,8 @@ if __name__ == '__main__':
                 target_dir = args.pop(1)
             elif switch[1:] == 'i':
                 infofile = args.pop(1)
+            elif switch[1:] == 'm':
+                mod = args.pop(1)
             else:
                 print('Unknown commandline switch {}'.format(switch))
                 usage=True
@@ -192,10 +195,6 @@ if __name__ == '__main__':
         """)
         sys.exit(1)
 
-    if version is None:
-        print('Please pass patch version as argument')
-        sys.exit(1)
-
 #    # target filename / fileId in updates_{mod}_files table / source files with version placeholder
 #    # if source files is single string, file is copied directly
 #    # if source files is a list, files are zipped
@@ -216,7 +215,14 @@ if __name__ == '__main__':
 
     with open(infofile) as fp:
         info = json.load(fp)
-        mod = info['mod']
+        mod is None:
+            mod = info['mod']
+        if version is None:
+            version = info['version']
         files = info['files']
+
+    if mod is None or version is None:
+        print('Please pass mod name and version either via commandline or in info file.')
+        sys.exit(1)
 
     do_files(mod, version, files, target_dir, dryrun)
