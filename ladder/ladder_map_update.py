@@ -38,7 +38,7 @@ def make_query(addmaps, outmaps):
 
     if len(outmaps) > 0:
         delete_query = "DELETE FROM ladder_map WHERE {};".format(
-            ' OR '.join(['idmap={}'.format(row[0]) for row in outmaps])
+            ' OR '.join(['id={}'.format(row[0]) for row in outmaps])
         )
         print(delete_query)
     else:
